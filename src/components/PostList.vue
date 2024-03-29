@@ -9,7 +9,7 @@
     <!-- Контейнер для отображения списка постов -->
     <div class="cards">
       <!-- Итерация по массиву постов и отображение каждого поста -->
-      <div class="cards-item" v-for="post in posts" :key="post.id">
+      <div class="cards-item" v-for="post in visiblePosts" :key="post.id">
         <!-- Заголовок и кнопки действий для каждого поста -->
         <div class="cards-item-title">
           <h3>{{ post.title }}</h3>
@@ -24,7 +24,10 @@
       </div>
     </div>
     <!-- Кнопка для открытия модального окна добавления нового поста (дублирующая) -->
-    <a-button class="cards-create" @click="showAddPostModal"><PlusOutlined />Create new post</a-button>
+    <div class="cards-item-buttons">
+      <a-button class="cards-create" @click="showAddPostModal"><PlusOutlined />Create new post</a-button>
+      <a-button v-if="shouldShowLoadMoreButton()" @click="loadMorePosts">Load More</a-button>
+    </div>
     <!-- Модальное окно для добавления нового поста -->
     <a-modal :footer="null" v-model:open="addPostModalVisible">
       <template #default>
@@ -86,17 +89,27 @@ export default defineComponent({
     const newPostTitle = ref(''); // Новый заголовок поста
     const newPostBody = ref(''); // Новый текст поста
     const loadingPosts = ref(true); // Флаг загрузки постов
+    const visiblePosts: Ref<Post[]> = ref([]);
+    const loadedPostCount = ref(12);
+    const displayedPostCount = ref(0);
 
     // Функция для загрузки списка постов
     const fetchPosts = async () => {
       try {
         const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
         posts.value = response.data;
+        loadInitialPosts();
       } catch (error) {
         console.error('Ошибка при загрузке списка постов:', error);
       } finally {
         loadingPosts.value = false;
       }
+    };
+
+    const loadInitialPosts = () => {
+      const endIndex = Math.min(loadedPostCount.value, posts.value.length);
+      visiblePosts.value = posts.value.slice(0, endIndex);
+      displayedPostCount.value = endIndex;
     };
 
     // Функция для удаления поста
@@ -171,6 +184,19 @@ export default defineComponent({
       addPostModalVisible.value = true;
     };
 
+    const loadMorePosts = () => {
+      const startIndex = displayedPostCount.value;
+      const endIndex = Math.min(startIndex + loadedPostCount.value, posts.value.length);
+      for (let i = startIndex; i < endIndex; i++) {
+        visiblePosts.value.push(posts.value[i]);
+      }
+      displayedPostCount.value = endIndex;
+    };
+
+    const shouldShowLoadMoreButton = () => {
+      return displayedPostCount.value < posts.value.length;
+    };
+
     // Загрузка списка постов при монтировании компонента
     onMounted(fetchPosts);
 
@@ -188,7 +214,10 @@ export default defineComponent({
       newPostTitle,
       newPostBody,
       loadingPosts,
-      showNotification
+      showNotification,
+      loadMorePosts,
+      visiblePosts,
+      shouldShowLoadMoreButton
     };
   }
 });
