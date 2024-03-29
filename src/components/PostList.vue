@@ -26,7 +26,7 @@
     <!-- Кнопка для открытия модального окна добавления нового поста (дублирующая) -->
     <a-button class="cards-create" @click="showAddPostModal"><PlusOutlined />Create new post</a-button>
     <!-- Модальное окно для добавления нового поста -->
-    <a-modal :footer="null" v-model:visible="addPostModalVisible">
+    <a-modal :footer="null" v-model:open="addPostModalVisible">
       <template #default>
         <!-- Форма для добавления нового поста -->
         <form class="cards-form" @submit.prevent="addOrSavePost">
@@ -45,7 +45,7 @@
     </a-modal>
 
     <!-- Модальное окно для редактирования существующего поста -->
-    <a-modal :footer="null" v-model:visible="editModalVisible">
+    <a-modal :footer="null" v-model:open="editModalVisible">
       <template #default>
         <!-- Форма для редактирования существующего поста -->
         <form class="cards-form" @submit.prevent="saveEditedPost">
@@ -130,7 +130,7 @@ export default defineComponent({
       }
     };
 
-    // Функция для добавления или сохранения нового поста
+    // Функция для добавления и сохранения нового поста
     const addOrSavePost = async () => {
       try {
         const response = await axios.post('https://jsonplaceholder.typicode.com/posts', {

@@ -10,7 +10,6 @@ const pinia = createPinia();
 app.use(Button);
 app.use(Modal);
 app.use(Form);
-app.use(Input);
 app.use(Spin);
 app.use(pinia);
 app.component('AInput', Input);
