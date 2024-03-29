@@ -68,6 +68,7 @@
 <script lang="ts">
 import { defineComponent, ref, Ref, onMounted } from 'vue';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { notification } from 'ant-design-vue';
 import Post from '@/models/Post'; // Подключение модели поста
 import axios from 'axios'; // Подключение Axios для выполнения HTTP-запросов
 
@@ -103,10 +104,19 @@ export default defineComponent({
       try {
         await axios.delete(`https://jsonplaceholder.typicode.com/posts/${postId}`);
         posts.value = posts.value.filter(post => post.id !== postId);
+        showNotification(postId);
         console.log('Пост успешно удален');
       } catch (error) {
         console.error('Ошибка при удалении поста:', error);
       }
+    };
+
+    const showNotification = (postId: Number) => {
+      notification.success({
+        message: 'Post deleted',
+        description: `Post ${postId} was successfully deleted`,
+        duration: 4.5
+      });
     };
 
     // Функция для открытия модального окна редактирования
@@ -177,7 +187,8 @@ export default defineComponent({
       addPostModalVisible,
       newPostTitle,
       newPostBody,
-      loadingPosts
+      loadingPosts,
+      showNotification
     };
   }
 });
