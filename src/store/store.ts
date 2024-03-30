@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { notification } from 'ant-design-vue';
 import Post from '@/models/Post';
 
 // Определение хранилища usePostStore
@@ -46,6 +47,10 @@ export const usePostStore = defineStore({
         await axios.delete(`https://jsonplaceholder.typicode.com/posts/${postId}`);
         this.posts = this.posts.filter(post => post.id !== postId);
         console.log('Пост успешно удален');
+        notification.success({
+          message: 'Success',
+          description: 'Post successfully deleted',
+        });
       } catch (error) {
         console.error('Ошибка при удалении поста:', error);
       }
