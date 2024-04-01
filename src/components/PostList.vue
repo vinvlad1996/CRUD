@@ -16,8 +16,9 @@
       </div>
     </div>
     <div class="cards-item-buttons">
-      <a-button class="cards-create" @click="showAddPostModal"><PlusOutlined />Create new post</a-button>
+      <a-button @click="showAddPostModal"><PlusOutlined />Create new post</a-button>
       <a-button v-if="shouldShowLoadMoreButton()" @click="loadMorePosts">Load More</a-button>
+      <a-button @click="scrollToTop"><ArrowUpOutlined /> Scroll to Top</a-button>
     </div>
     <a-modal :footer="null" v-model:open="addPostModalVisible">
       <template #default>
@@ -52,7 +53,7 @@
 <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue';
   import { usePostStore } from '../store/store';
-  import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue';
+  import { DeleteOutlined, EditOutlined, PlusOutlined, ArrowUpOutlined } from '@ant-design/icons-vue';
   import Post from '@/models/Post';
 
   // Инициализация хранилища постов и реактивных переменных для модальных окон и данных формы
@@ -111,6 +112,10 @@
     displayedPostCount.value = endIndex;
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Прокрутка к верху с плавным эффектом
+  };
+
   onMounted(() => {
     postStore.fetchPosts();
   });
@@ -128,6 +133,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
+  padding-bottom: 20px;
 }
 
 .cards-create {
